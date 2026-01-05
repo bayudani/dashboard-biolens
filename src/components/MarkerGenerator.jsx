@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/static-components */
 import { useState, useRef } from 'react';
 import html2canvas from 'html2canvas';
 import { 
@@ -135,9 +134,14 @@ export default function MarkerGenerator() {
   );
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 h-[calc(100vh-100px)]">
+    // FIX: Layout Mobile Responsive
+    // - h-auto buat mobile biar bisa scroll ke bawah
+    // - lg:h-[calc(100vh-100px)] buat desktop biar fixed
+    <div className="flex flex-col lg:flex-row gap-8 h-auto lg:h-[calc(100vh-100px)]">
+      
       {/* LEFT CONTROLS */}
-      <div className="w-full lg:w-1/3 space-y-6 overflow-y-auto pr-2 pb-10">
+      {/* - lg:overflow-y-auto biar scroll cuma di desktop, pr-2 dihapus di mobile */}
+      <div className="w-full lg:w-1/3 space-y-6 lg:overflow-y-auto lg:pr-2 pb-10">
         <div className="space-y-4">
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Printer className="h-5 w-5 text-indigo-600" /> Generator Kontrol
@@ -242,14 +246,16 @@ export default function MarkerGenerator() {
       </div>
 
       {/* RIGHT PREVIEW AREA FIXED */}
-      <div className="flex-1 bg-slate-100 rounded-xl relative flex items-center justify-center border border-slate-200 p-8 overflow-auto min-h-[600px]">
+      {/* - min-h-[400px] biar di HP gak gepeng, p-4 di mobile */}
+      <div className="w-full lg:flex-1 bg-slate-100 rounded-xl relative flex items-center justify-center border border-slate-200 p-4 lg:p-8 overflow-hidden min-h-[400px] lg:min-h-0">
         {/* Grid Background */}
         <div className="absolute inset-0 opacity-10 pointer-events-none" 
              style={{ backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
         </div>
 
         {/* Scalable Container for Preview */}
-        <div className="transform scale-[0.85] lg:scale-100 transition-transform duration-300 origin-center">
+        {/* Extreme scaling for mobile (0.65) */}
+        <div className="transform scale-[0.65] sm:scale-[0.8] lg:scale-100 transition-transform duration-300 origin-center">
             <div ref={cardRef}>
                <CardTemplate data={config} isPreview={true} />
             </div>
