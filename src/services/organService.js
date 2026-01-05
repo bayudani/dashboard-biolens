@@ -1,5 +1,5 @@
 const USE_MOCK_API = false; // Set true untuk mock API
-const API_BASE_URL = "http://localhost:3001/api/organs";
+const API_BASE_URL = "https://api-ar-organ.vercel.app/api/organs";
 
 // Helper simulasi loading (bisa dihapus nanti)
 const mockDelay = (data) => new Promise(resolve => setTimeout(() => resolve(data), 800));
