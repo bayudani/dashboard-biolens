@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import {
-    Plus, Search, Pencil, Trash2, Database, Box, Activity, ImageIcon
+    Plus, Search, Pencil, Trash2, Database, AlertCircle
 } from 'lucide-react';
 
 import { organService } from '../services/organService';
@@ -30,25 +30,22 @@ export default function OrganManager() {
     const loadData = async () => {
         setLoading(true);
         try {
-            // Promise.allSettled lebih aman biar kalau satu gagal, yg lain tetep jalan
             const results = await Promise.allSettled([
                 organService.getAll(),
                 organService.getSystems()
             ]);
             
-            // Cek hasil fetch organs
             if (results[0].status === 'fulfilled') {
                 setOrgans(results[0].value);
             } else {
                 console.error("Gagal load organs:", results[0].reason);
             }
 
-            // Cek hasil fetch systems
             if (results[1].status === 'fulfilled') {
                 setSystems(results[1].value);
             } else {
                 console.error("Gagal load systems:", results[1].reason);
-                setSystems([]); // Fallback array kosong
+                setSystems([]); 
             }
 
         } catch (error) {
@@ -58,22 +55,18 @@ export default function OrganManager() {
         }
     };
 
-    // Fungsi khusus buat buka modal Edit
     const handleEdit = (organ) => {
         setEditingOrgan(organ);
         setIsModalOpen(true);
     };
 
-    // Fungsi khusus buat buka modal Create
     const handleCreate = () => {
         setEditingOrgan(null);
         setIsModalOpen(true);
     };
 
-    // Fungsi tutup modal & reset
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        // Kasih delay dikit biar animasi modal kelar dulu baru state di-reset (opsional, tp lebih smooth)
         setTimeout(() => setEditingOrgan(null), 300);
     };
 
@@ -82,10 +75,16 @@ export default function OrganManager() {
         try {
             if (editingOrgan) {
                 const updated = await organService.update(editingOrgan.id, formData);
-                setOrgans(prev => prev.map(item => item.id === editingOrgan.id ? updated : item));
+                const relatedSystem = systems.find(s => s.id === updated.systemId);
+                const finalData = { ...updated, system: relatedSystem };
+
+                setOrgans(prev => prev.map(item => item.id === editingOrgan.id ? finalData : item));
             } else {
                 const created = await organService.create(formData);
-                setOrgans(prev => [...prev, created]);
+                const relatedSystem = systems.find(s => s.id === created.systemId);
+                const finalData = { ...created, system: relatedSystem };
+
+                setOrgans(prev => [...prev, finalData]);
             }
             handleCloseModal();
         } catch (error) {
@@ -110,15 +109,16 @@ export default function OrganManager() {
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
+    // STATISTIK (Tanpa Foto & 3D)
     const stats = {
         total: organs.length,
-        ready: organs.filter(o => o.model3D_Url).length,
-        missing: organs.filter(o => !o.model3D_Url).length
+        // Hitung organ yang gak punya sistem induk (Penting buat grouping)
+        noSystem: organs.filter(o => !o.system).length
     };
 
     return (
         <div className="space-y-8">
-            {/* Stats */}
+            {/* Stats Cards - Grid jadi 2 kolom */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -127,20 +127,21 @@ export default function OrganManager() {
                     </CardHeader>
                     <CardContent><div className="text-2xl font-bold">{stats.total}</div></CardContent>
                 </Card>
+                
                 <Card>
                     <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Model Ready</CardTitle>
-                        <Box className="h-4 w-4 text-emerald-500" />
+                        <CardTitle className="text-sm font-medium">Tanpa Sistem</CardTitle>
+                        <AlertCircle className={`h-4 w-4 ${stats.noSystem > 0 ? "text-red-500" : "text-slate-300"}`} />
                     </CardHeader>
-                    <CardContent><div className="text-2xl font-bold text-emerald-600">{stats.ready}</div></CardContent>
+                    <CardContent>
+                        <div className={`text-2xl font-bold ${stats.noSystem > 0 ? "text-red-600" : "text-slate-900"}`}>
+                            {stats.noSystem}
+                        </div>
+                        <p className="text-xs text-muted-foreground mt-1">
+                            Organ belum dikelompokkan
+                        </p>
+                    </CardContent>
                 </Card>
-                {/* <Card>
-                    <CardHeader className="flex flex-row items-center justify-between pb-2">
-                        <CardTitle className="text-sm font-medium">Missing Model</CardTitle>
-                        <Activity className="h-4 w-4 text-orange-500" />
-                    </CardHeader>
-                    <CardContent><div className="text-2xl font-bold text-orange-600">{stats.missing}</div></CardContent>
-                </Card> */}
             </div>
 
             {/* Table Area */}
@@ -164,51 +165,36 @@ export default function OrganManager() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>ID</TableHead>
-                                <TableHead>Gambar</TableHead>
+                                {/* Hapus Kolom Gambar */}
                                 <TableHead>Nama</TableHead>
                                 <TableHead className="hidden md:table-cell">Deskripsi</TableHead>
                                 <TableHead>Sistem</TableHead>
-                                {/* <TableHead>Status</TableHead> */}
                                 <TableHead className="text-right">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
                         <TableBody>
                             {loading ? (
-                                <TableRow><TableCell colSpan={7} className="text-center h-24">Loading...</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={5} className="text-center h-24">Loading...</TableCell></TableRow>
                             ) : filteredData.length === 0 ? (
-                                <TableRow><TableCell colSpan={7} className="text-center h-24 text-muted-foreground">Tidak ada data.</TableCell></TableRow>
+                                <TableRow><TableCell colSpan={5} className="text-center h-24 text-muted-foreground">Tidak ada data.</TableCell></TableRow>
                             ) : filteredData.map(organ => (
                                 <TableRow key={organ.id}>
                                     <TableCell className="font-mono text-xs">#{organ.id}</TableCell>
-                                    <TableCell>
-                                        {organ.imageUrl ? (
-                                            <div className="w-10 h-10 rounded overflow-hidden border bg-slate-50">
-                                                <img src={organ.imageUrl} alt={organ.name} className="w-full h-full object-cover" />
-                                            </div>
-                                        ) : (
-                                            <div className="w-10 h-10 rounded bg-slate-100 flex items-center justify-center">
-                                                <ImageIcon className="h-4 w-4 text-slate-400" />
-                                            </div>
-                                        )}
-                                    </TableCell>
+                                    {/* Hapus Cell Gambar */}
                                     <TableCell className="font-medium">{organ.name}</TableCell>
-                                    <TableCell className="hidden md:table-cell truncate max-w-xs text-muted-foreground text-xs">
-                                        {/* Guard biar gak error kalo description null */}
-                                        {(organ.description || '').replace(/<[^>]*>?/gm, '').substring(0, 50)}...
+                                    <TableCell className="hidden md:table-cell truncate max-w-md text-muted-foreground text-xs">
+                                        {/* Lebarin max-width deskripsi karena kolom gambar ilang */}
+                                        {(organ.description || '').replace(/<[^>]*>?/gm, '').substring(0, 80)}...
                                     </TableCell>
                                     <TableCell>
                                         {organ.system ? (
                                             <Badge variant="secondary" className="text-xs">{organ.system.name}</Badge>
                                         ) : (
-                                            <span className="text-xs text-muted-foreground">-</span>
+                                            <Badge variant="outline" className="text-xs text-red-500 border-red-200 bg-red-50">Unassigned</Badge>
                                         )}
                                     </TableCell>
-                                    {/* <TableCell>
-                                        {organ.model3D_Url ? <Badge className="bg-emerald-50 text-emerald-700">Ready</Badge> : <Badge variant="outline">Missing</Badge>}
-                                    </TableCell> */}
                                     <TableCell className="text-right">
                                         <div className="flex justify-end gap-2">
-                                            {/* Pake handleEdit yang baru */}
                                             <Button variant="ghost" size="icon" onClick={() => handleEdit(organ)}>
                                                 <Pencil className="h-4 w-4" />
                                             </Button>
@@ -231,7 +217,6 @@ export default function OrganManager() {
                         <DialogDescription>Masukkan detail data organ di bawah ini.</DialogDescription>
                     </DialogHeader>
                     
-                    {/* Guard systems biar gak error map of undefined */}
                     <OrganForm
                         key={editingOrgan ? editingOrgan.id : 'new'}
                         initialData={editingOrgan}
