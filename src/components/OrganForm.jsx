@@ -4,6 +4,8 @@ import { Loader2, X, UploadCloud } from 'lucide-react';
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
+import API_BASE_URL, { USE_MOCK_API } from '../config/apiConfig';
+
 
 export function OrganForm({ initialData, systems = [], onSubmit, onCancel, isSubmitting }) {
   const editor = useRef(null);
@@ -37,7 +39,7 @@ export function OrganForm({ initialData, systems = [], onSubmit, onCancel, isSub
     // Config Upload ke Backend Express
     uploader: {
       insertImageAsBase64URI: false,
-      url: 'http://localhost:3000/api/upload-media',
+      url: `${API_BASE_URL}/upload-media`,
       format: 'json',
       method: 'POST',
       // FIX UTAMA: Balikin jadi function biar Jodit gak bingung

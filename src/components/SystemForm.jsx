@@ -5,6 +5,8 @@ import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
 import { Textarea } from "../components/ui/textarea";
+import API_BASE_URL, { USE_MOCK_API } from '../config/apiConfig';
+
 
 export function SystemForm({ initialData, onSubmit, onCancel, isSubmitting }) {
   const editor = useRef(null);
@@ -33,7 +35,7 @@ export function SystemForm({ initialData, onSubmit, onCancel, isSubmitting }) {
     ],
     uploader: {
       insertImageAsBase64URI: false,
-      url: 'http://localhost:3000/api/upload-media',
+      url: `${API_BASE_URL}/upload-media`,
       format: 'json',
       method: 'POST',
       filesVariableName: 'file',
