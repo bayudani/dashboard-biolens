@@ -1,6 +1,5 @@
-import api from "../api/apiService.js";
-const USE_MOCK_API = false;
-const API_BASE_URL = api; 
+
+import API_BASE_URL, { USE_MOCK_API } from '../config/apiConfig';
 
 // Helper simulasi loading
 const mockDelay = (data) => new Promise(resolve => setTimeout(() => resolve(data), 800));

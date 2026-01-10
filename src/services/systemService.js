@@ -1,21 +1,19 @@
-import api from "../api/apiService.js";
-
-const USE_MOCK_API = false;
-const API_BASE_URL = api; 
+import API_BASE_URL, { USE_MOCK_API } from '../config/apiConfig';
 
 const mockDelay = (data) => new Promise(resolve => setTimeout(() => resolve(data), 800));
 
 export const systemService = {
   getAll: async () => {
     if (USE_MOCK_API) return mockDelay([]);
-    const res = await fetch(`${API_BASE_URL}`);
+    // Pake endpoint /systems
+    const res = await fetch(`${API_BASE_URL}/systems`);
     if (!res.ok) throw new Error("Gagal fetch data sistem");
     const json = await res.json();
     return json.data; 
   },
 
   getById: async (id) => {
-    const res = await fetch(`${API_BASE_URL}/${id}`);
+    const res = await fetch(`${API_BASE_URL}/systems/${id}`);
     if (!res.ok) throw new Error("Gagal fetch detail sistem");
     const json = await res.json();
     return json.data;
@@ -24,7 +22,7 @@ export const systemService = {
   create: async (formData) => {
     if (USE_MOCK_API) return mockDelay({ id: Date.now() });
     
-    const res = await fetch(`${API_BASE_URL}`, {
+    const res = await fetch(`${API_BASE_URL}/systems`, {
       method: 'POST',
       body: formData 
     });
@@ -40,7 +38,7 @@ export const systemService = {
   update: async (id, formData) => {
     if (USE_MOCK_API) return mockDelay({ id });
     
-    const res = await fetch(`${API_BASE_URL}/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/systems/${id}`, {
       method: 'PUT',
       body: formData
     });
@@ -55,10 +53,9 @@ export const systemService = {
 
   delete: async (id) => {
     if (USE_MOCK_API) return mockDelay(true);
-    const res = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+    const res = await fetch(`${API_BASE_URL}/systems/${id}`, { method: 'DELETE' });
     if (!res.ok) {
         const err = await res.json();
-        // Handle error foreign key (masih ada organ di dalamnya)
         throw new Error(err.message || "Gagal delete data");
     }
     return true;
