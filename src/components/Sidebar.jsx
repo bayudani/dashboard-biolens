@@ -1,14 +1,14 @@
-import { LayoutDashboard, Database, Activity, Box, Printer } from 'lucide-react'; // Tambah icon Printer
+import { LayoutDashboard, Database, Activity, Box, Printer, Network } from 'lucide-react'; 
 import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
 import { cn } from "../lib/utils";
 
 export function Sidebar({ isOpen, onClose, currentView, onChangeView }) {
 
     const menuItems = [
+        // Menu Baru Di Sini
         { id: 'organs', label: 'Management Organ', icon: Database },
+        { id: 'systems', label: 'Sistem Organ', icon: Network }, 
         { id: 'markers', label: 'AR Marker Gen', icon: Printer },
-        // { id: 'stats', label: 'Analytics', icon: Activity },
     ];
 
     return (
@@ -50,8 +50,6 @@ export function Sidebar({ isOpen, onClose, currentView, onChangeView }) {
                         </Button>
                     ))}
                 </nav>
-
-
             </aside>
 
             {isOpen && (

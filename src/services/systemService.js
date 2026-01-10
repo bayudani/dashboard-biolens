@@ -1,36 +1,32 @@
 import api from "../api/apiService.js";
+
 const USE_MOCK_API = false;
 const API_BASE_URL = api; 
 
-// Helper simulasi loading
 const mockDelay = (data) => new Promise(resolve => setTimeout(() => resolve(data), 800));
 
-export const organService = {
-  // --- ORGANS ---
+export const systemService = {
   getAll: async () => {
     if (USE_MOCK_API) return mockDelay([]);
-    const res = await fetch(`${API_BASE_URL}/organs`);
-    if (!res.ok) throw new Error("Gagal fetch data organ");
+    const res = await fetch(`${API_BASE_URL}`);
+    if (!res.ok) throw new Error("Gagal fetch data sistem");
     const json = await res.json();
     return json.data; 
   },
 
-  // Fungsi Baru: Ambil list sistem organ buat dropdown
-  getSystems: async () => {
-    if (USE_MOCK_API) return mockDelay([{id: 1, name: "Pencernaan"}, {id: 2, name: "Pernapasan"}]);
-    const res = await fetch(`${API_BASE_URL}/systems`);
-    if (!res.ok) throw new Error("Gagal fetch data sistem");
+  getById: async (id) => {
+    const res = await fetch(`${API_BASE_URL}/${id}`);
+    if (!res.ok) throw new Error("Gagal fetch detail sistem");
     const json = await res.json();
-    return json.data; 
+    return json.data;
   },
   
   create: async (formData) => {
     if (USE_MOCK_API) return mockDelay({ id: Date.now() });
     
-    // Kirim ke /organs
-    const res = await fetch(`${API_BASE_URL}/organs`, {
+    const res = await fetch(`${API_BASE_URL}`, {
       method: 'POST',
-      body: formData // Browser set Content-Type automatically
+      body: formData 
     });
 
     if (!res.ok) {
@@ -44,7 +40,7 @@ export const organService = {
   update: async (id, formData) => {
     if (USE_MOCK_API) return mockDelay({ id });
     
-    const res = await fetch(`${API_BASE_URL}/organs/${id}`, {
+    const res = await fetch(`${API_BASE_URL}/${id}`, {
       method: 'PUT',
       body: formData
     });
@@ -59,8 +55,12 @@ export const organService = {
 
   delete: async (id) => {
     if (USE_MOCK_API) return mockDelay(true);
-    const res = await fetch(`${API_BASE_URL}/organs/${id}`, { method: 'DELETE' });
-    if (!res.ok) throw new Error("Gagal delete data");
+    const res = await fetch(`${API_BASE_URL}/${id}`, { method: 'DELETE' });
+    if (!res.ok) {
+        const err = await res.json();
+        // Handle error foreign key (masih ada organ di dalamnya)
+        throw new Error(err.message || "Gagal delete data");
+    }
     return true;
   }
 };

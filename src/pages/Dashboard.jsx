@@ -2,25 +2,34 @@ import { useState } from 'react';
 import { Menu, ChevronRight, UserCircle, LogOut } from 'lucide-react';
 import { Sidebar } from '../components/Sidebar';
 import { Button } from "../components/ui/button";
-import OrganManager from '../components/OrganManager'; // Import halaman Organ
-import MarkerGenerator from '../components/MarkerGenerator'; // Import halaman Marker
+
+// Import Halaman-halaman
+import DashboardHome from '../components/DashboardHome'; // Import Baru
+import OrganManager from '../components/OrganManager'; 
+import SystemManager from '../components/SystemManager'; 
+import MarkerGenerator from '../components/MarkerGenerator'; 
 
 export default function Dashboard({ onLogout }) {
-  const [currentView, setCurrentView] = useState('organs'); // Default view
+  // GANTI DEFAULT VIEW JADI 'dashboard'
+  const [currentView, setCurrentView] = useState('dashboard'); 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // Logic ganti halaman
   const renderContent = () => {
     switch(currentView) {
+      case 'dashboard': return <DashboardHome onChangeView={setCurrentView} />; // Case Baru
       case 'organs': return <OrganManager />;
+      case 'systems': return <SystemManager />;
       case 'markers': return <MarkerGenerator />;
-      default: return <OrganManager />; // Default ke organs
+      default: return <DashboardHome onChangeView={setCurrentView} />; 
     }
   };
 
   const getTitle = () => {
     switch(currentView) {
+      case 'dashboard': return 'Dashboard Overview';
       case 'organs': return 'Overview Organ';
+      case 'systems': return 'Management Sistem Organ';
       case 'markers': return 'Generator Kartu AR';
       default: return 'Dashboard';
     }
@@ -35,7 +44,7 @@ export default function Dashboard({ onLogout }) {
         currentView={currentView}
         onChangeView={(view) => {
           setCurrentView(view);
-          setMobileMenuOpen(false); // Tutup sidebar mobile pas ganti menu
+          setMobileMenuOpen(false); 
         }}
       />
 
