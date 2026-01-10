@@ -4,8 +4,8 @@ import { Loader2, X, UploadCloud } from 'lucide-react';
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
 import { Label } from "../components/ui/label";
-import API_BASE_URL, { USE_MOCK_API } from '../config/apiConfig';
-
+// Pastikan path import ini sesuai sama file config lo (api.js atau apiConfig.js)
+import API_BASE_URL from '../config/apiConfig';
 
 export function OrganForm({ initialData, systems = [], onSubmit, onCancel, isSubmitting }) {
   const editor = useRef(null);
@@ -21,7 +21,8 @@ export function OrganForm({ initialData, systems = [], onSubmit, onCancel, isSub
   const [imageFile, setImageFile] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(initialData?.imageUrl || null);
 
-  // --- CONFIG JODIT EDITOR (FIXED) ---
+  // --- CONFIG JODIT EDITOR (SIMPLIFIED & FIXED) ---
+  // Kita samain logic-nya kayak SystemForm yang udah terbukti jalan
   const config = useMemo(() => ({
     readonly: false,
     placeholder: 'Tulis penjelasan lengkap organ di sini...',
@@ -36,48 +37,24 @@ export function OrganForm({ initialData, systems = [], onSubmit, onCancel, isSub
       'hr', 'eraser', 'copyformat', '|',
       'fullsize', 'preview', 'print', 'source'
     ],
-    // Config Upload ke Backend Express
+    // Config Upload Simple (Copy dari SystemForm)
     uploader: {
       insertImageAsBase64URI: false,
       url: `${API_BASE_URL}/upload-media`,
       format: 'json',
       method: 'POST',
-      // FIX UTAMA: Balikin jadi function biar Jodit gak bingung
-      // Kadang kalo string, dia ngirimnya file[] bukan file
-      filesVariableName: function () {
-        return 'file'; 
-      },
+      filesVariableName: 'file', // Pake string aja, jangan function
       headers: {
-        // 'Authorization': 'Bearer token'
+        // 'Authorization': 'Bearer token' // Kalo butuh auth
       },
-      process: function (resp) {
-        // Kita bantu Jodit baca respon backend
-        if (resp.url) {
-            return {
-                files: [resp.url], // Jodit butuh array
-                path: resp.url,
-                error: null,
-                msg: "Sukses upload"
-            };
-        }
-        return {
-             files: [],
-             error: "Gagal dapet URL gambar",
-             msg: "Error dari server"
-        };
+      // Simple process: ambil URL dari respon backend
+      process: function (resp) { 
+        return { files: [resp.url] }; 
       },
-      // FIX TAMBAHAN: Paksa insert gambar kalau sukses
-      defaultHandlerSuccess: function (data) {
-        if (data.files && data.files.length) {
-            this.selection.insertImage(data.files[0], null, 300); // 300px width
-        }
-      },
-      error: function (e) {
+      error: function (e) { 
         console.error("Gagal upload:", e);
-        // Alert cuma muncul kalo beneran error fatal
-        if (e.message !== "Abort") {
-            alert("Gagal upload gambar. Cek Console.");
-        }
+        // Alert cuma kalau error parah
+        if (e.message !== "Abort") alert("Gagal upload gambar.");
       }
     },
     statusbar: true,
