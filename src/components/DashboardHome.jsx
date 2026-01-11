@@ -165,7 +165,7 @@ export default function DashboardHome({ onChangeView }) {
                         </CardHeader>
                         <CardContent className="space-y-3">
                             <p className="text-sm text-slate-300 mb-4">
-                                Jalan pintas untuk mengelola konten aplikasi AR kamu.
+                                Jalan pintas untuk mengelola konten aplikasi AR.
                             </p>
                             <Button 
                                 onClick={() => onChangeView('systems')} 

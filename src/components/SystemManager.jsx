@@ -131,10 +131,10 @@ export default function SystemManager() {
                         <TableHeader>
                             <TableRow>
                                 <TableHead>ID</TableHead>
-                                <TableHead>Ilustrasi</TableHead>
+                                {/* <TableHead>Ilustrasi</TableHead> */}
                                 <TableHead>Nama Sistem</TableHead>
                                 <TableHead className="hidden md:table-cell">Deskripsi</TableHead>
-                                <TableHead>Jml Organ</TableHead>
+                                <TableHead>Jumlah Organ</TableHead>
                                 <TableHead className="text-right">Aksi</TableHead>
                             </TableRow>
                         </TableHeader>
@@ -146,7 +146,7 @@ export default function SystemManager() {
                             ) : filteredData.map(sys => (
                                 <TableRow key={sys.id}>
                                     <TableCell className="font-mono text-xs">#{sys.id}</TableCell>
-                                    <TableCell>
+                                    {/* <TableCell>
                                         {sys.imageUrl ? (
                                             <div className="w-10 h-10 rounded overflow-hidden border bg-slate-50">
                                                 <img src={sys.imageUrl} alt={sys.name} className="w-full h-full object-cover" />
@@ -156,7 +156,7 @@ export default function SystemManager() {
                                                 <ImageIcon className="h-4 w-4 text-slate-400" />
                                             </div>
                                         )}
-                                    </TableCell>
+                                    </TableCell> */}
                                     <TableCell className="font-medium">{sys.name}</TableCell>
                                     <TableCell className="hidden md:table-cell truncate max-w-xs text-muted-foreground text-xs">
                                         {(sys.description || '').replace(/<[^>]*>?/gm, '').substring(0, 50)}...
