@@ -1,14 +1,17 @@
-import { LayoutDashboard, Database, Activity, Box, Printer, Network } from 'lucide-react'; 
+import { LayoutDashboard, Database, Activity, Box, Printer, Network, FileQuestion, Trophy } from 'lucide-react'; 
 import { Button } from "../components/ui/button";
 import { cn } from "../lib/utils";
 
 export function Sidebar({ isOpen, onClose, currentView, onChangeView }) {
 
     const menuItems = [
-        // Menu Baru Di Sini
-        { id: 'organs', label: 'Management Organ', icon: Database },
+        { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard }, // Gw pindahin dashboard ke array biar rapi
         { id: 'systems', label: 'Sistem Organ', icon: Network }, 
+        { id: 'organs', label: 'Management Organ', icon: Database },
         { id: 'markers', label: 'AR Marker Gen', icon: Printer },
+        // --- MENU BARU ---
+        { id: 'quizzes', label: 'Management Kuis', icon: FileQuestion },
+        { id: 'scores', label: 'Data Nilai Siswa', icon: Trophy },
     ];
 
     return (
@@ -25,27 +28,18 @@ export function Sidebar({ isOpen, onClose, currentView, onChangeView }) {
                 </div>
 
                 <nav className="space-y-1">
-                    <Button
-                        variant={currentView === 'dashboard' ? 'secondary' : 'ghost'}
-                        className="w-full justify-start gap-2"
-                        onClick={() => onChangeView('dashboard')}
-                    >
-                        <LayoutDashboard className="h-4 w-4" />
-                        Dashboard
-                    </Button>
-
-                    <div className="pt-4 pb-2">
-                        <p className="text-xs font-bold text-slate-400 uppercase px-2">Menu</p>
+                    <div className="pt-2 pb-2">
+                        <p className="text-xs font-bold text-slate-400 uppercase px-2">Main Menu</p>
                     </div>
 
                     {menuItems.map((item) => (
                         <Button
                             key={item.id}
                             variant={currentView === item.id ? 'secondary' : 'ghost'}
-                            className={cn("w-full justify-start gap-2", currentView === item.id ? "font-bold" : "text-slate-500")}
+                            className={cn("w-full justify-start gap-2", currentView === item.id ? "font-bold bg-slate-100" : "text-slate-500")}
                             onClick={() => onChangeView(item.id)}
                         >
-                            <item.icon className="h-4 w-4" />
+                            <item.icon className={cn("h-4 w-4", currentView === item.id ? "text-slate-900" : "text-slate-400")} />
                             {item.label}
                         </Button>
                     ))}

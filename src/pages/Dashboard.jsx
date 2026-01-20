@@ -3,34 +3,46 @@ import { Menu, ChevronRight, UserCircle, LogOut } from 'lucide-react';
 import { Sidebar } from '../components/Sidebar';
 import { Button } from "../components/ui/button";
 
-// Import Halaman-halaman
-import DashboardHome from '../components/DashboardHome'; // Import Baru
+// Components Halaman
+import DashboardHome from '../components/DashboardHome'; 
 import OrganManager from '../components/OrganManager'; 
 import SystemManager from '../components/SystemManager'; 
 import MarkerGenerator from '../components/MarkerGenerator'; 
 
+// --- IMPORT MENU BARU ---
+import QuizManager from '../components/quizManager';
+import ScoreManager from '../components/scoreManager';
+
 export default function Dashboard({ onLogout }) {
-  // GANTI DEFAULT VIEW JADI 'dashboard'
   const [currentView, setCurrentView] = useState('dashboard'); 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  // Logic ganti halaman
+  // Logic buat nentuin konten mana yang dirender
   const renderContent = () => {
     switch(currentView) {
-      case 'dashboard': return <DashboardHome onChangeView={setCurrentView} />; // Case Baru
-      case 'organs': return <OrganManager />;
+      case 'dashboard': return <DashboardHome onChangeView={setCurrentView} />;
       case 'systems': return <SystemManager />;
+      case 'organs': return <OrganManager />;
       case 'markers': return <MarkerGenerator />;
+      // --- CASE BARU ---
+      case 'quizzes': return <QuizManager />;
+      case 'scores': return <ScoreManager />;
+      
       default: return <DashboardHome onChangeView={setCurrentView} />; 
     }
   };
 
+  // Logic buat ganti Judul di Header
   const getTitle = () => {
     switch(currentView) {
       case 'dashboard': return 'Dashboard Overview';
-      case 'organs': return 'Overview Organ';
       case 'systems': return 'Management Sistem Organ';
+      case 'organs': return 'Overview Organ';
       case 'markers': return 'Generator Kartu AR';
+      // --- JUDUL BARU ---
+      case 'quizzes': return 'Management Kuis';
+      case 'scores': return 'Data Nilai Siswa';
+      
       default: return 'Dashboard';
     }
   };
@@ -49,6 +61,7 @@ export default function Dashboard({ onLogout }) {
       />
 
       <div className="flex-1 flex flex-col transition-all duration-300">
+        {/* Header */}
         <header className="h-16 border-b bg-white/80 backdrop-blur-sm sticky top-0 z-40 px-6 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setMobileMenuOpen(true)}>
@@ -77,6 +90,7 @@ export default function Dashboard({ onLogout }) {
           </div>
         </header>
 
+        {/* Main Content Area */}
         <main className="flex-1 p-6 md:p-8">
           {renderContent()}
         </main>

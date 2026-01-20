@@ -109,7 +109,6 @@ export default function OrganManager() {
         item.name.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // STATISTIK (Tanpa Foto & 3D)
     const stats = {
         total: organs.length,
         // Hitung organ yang gak punya sistem induk (Penting buat grouping)
@@ -183,7 +182,6 @@ export default function OrganManager() {
                                     {/* Hapus Cell Gambar */}
                                     <TableCell className="font-medium">{organ.name}</TableCell>
                                     <TableCell className="hidden md:table-cell truncate max-w-md text-muted-foreground text-xs">
-                                        {/* Lebarin max-width deskripsi karena kolom gambar ilang */}
                                         {(organ.description || '').replace(/<[^>]*>?/gm, '').substring(0, 80)}...
                                     </TableCell>
                                     <TableCell>

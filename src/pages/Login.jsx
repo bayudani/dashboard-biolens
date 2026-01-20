@@ -12,7 +12,7 @@ export default function Login({ onLogin }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (username === 'admin' && password === 'admin') {
-            onLogin(); // Panggil fungsi login dari parent (App.jsx)
+            onLogin(); 
         } else {
             setError('Username atau password salah (Coba: admin/admin)');
         }
@@ -28,7 +28,7 @@ export default function Login({ onLogin }) {
                         </div>
                     </div>
                     <CardTitle className="text-2xl font-bold text-slate-900">BioLens Admin</CardTitle>
-                    <CardDescription>Login dulu biar aman skripsinya! 🔒</CardDescription>
+                    <CardDescription>Login untuk masuk ke halaman admin</CardDescription>
                 </CardHeader>
                 <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-4">
@@ -50,7 +50,6 @@ export default function Login({ onLogin }) {
                                 <Lock className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                                 <Input
                                     type="password"
-                                    placeholder="admin"
                                     className="pl-9"
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
